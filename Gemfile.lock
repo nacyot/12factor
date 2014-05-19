@@ -1,0 +1,27 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    daemons (1.1.9)
+    eventmachine (1.0.3)
+    iconv (1.0.4)
+    maruku (0.6.0)
+      syntax (>= 1.0.0)
+    rack (1.5.2)
+    sinatra (1.2.6)
+      rack (~> 1.1)
+      tilt (>= 1.2.2, < 2.0)
+    syntax (1.2.0)
+    thin (1.2.7)
+      daemons (>= 1.0.9)
+      eventmachine (>= 0.12.6)
+      rack (>= 1.0.0)
+    tilt (1.4.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  iconv
+  maruku (= 0.6.0)
+  sinatra (= 1.2.6)
+  thin (= 1.2.7)
