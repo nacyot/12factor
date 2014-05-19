@@ -1,18 +1,18 @@
-## I. Codebase
-### One codebase tracked in revision control, many deploys
+## 1. 코드베이스(Codebase)
+### 버전 관리되는 하나의 코드베이스와 다수의 배포
 
-A twelve-factor app is always tracked in a version control system, such as [Git](http://git-scm.com/), [Mercurial](http://mercurial.selenic.com/), or [Subversion](http://subversion.apache.org/).  A copy of the revision tracking database is known as a *code repository*, often shortened to *code repo* or just *repo*.
+Twelve-Factor App은 항상 [Git](http://git-scm.com/), [Mercurial](http://mercurial.selenic.com/), [Subversion](http://subversion.apache.org/)과 같은 버전 관리 시스템을 사용한다.  버전 관리의 이력 정보를 담고 있는 데이터베이스는 *코드 저장소(code repository)*라고 불린다. 이를 줄여서 *code repo*나 *repo*라고 부르기도 한다.
 
-A *codebase* is any single repo (in a centralized revision control system like Subversion), or any set of repos who share a root commit (in a decentralized revision control system like Git).
+*코드베이스*란 Subversion과 같은 중앙 관리형 버전 관리 시스템에서 하나의 저장소나, Git과 같은 분산형 버전 관리 시스템에서 루트 커밋을 공유하는 다수의 저장소를 일컫는다.
 
-![One codebase maps to many deploys](/images/codebase-deploys.png)
+![다수의 배포에 대한 하나의 코드베이스](/images/codebase-deploys.png)
 
-There is always a one-to-one correlation between the codebase and the app:
+코드베이스와 어플리케이션 간에는 항상 1:1의 관계가 성립한다.
 
-* If there are multiple codebases, it's not an app -- it's a distributed system.  Each component in a distributed system is an app, and each can individually comply with twelve-factor.
-* Multiple apps sharing the same code is a violation of twelve-factor.  The solution here is to factor shared code into libraries which can be included through the [dependency manager](/dependencies).
+* 코드베이스가 다수 존재한다면, 이는 단일 어플리케이션이 아니라 분산 시스템이다.  물론 분산 시스템의 구성 요소가 되는 각각의 컴포넌트는 하나의 어플리케이션이며, Twelve-Factor를 따를 수 있다.
+* 하나의 코드를 공유하는 다수의 어플리케이션은 Twelve-Fator에 위배된다.  이러한 문제를 해결하려면 먼저 공통된 부분을 라이브러리로 분리하고 이 라이브러리를 [의존성 관리](/dependencies)를 통해서 사용하면 된다.
 
-There is only one codebase per app, but there will be many deploys of the app.  A *deploy* is a running instance of the app.  This is typically a production site, and one or more staging sites.  Additionally, every developer has a copy of the app running in their local development environment, each of which also qualifies as a deploy.
+코드베이스는 각 어플리케이션마다 단 하나만 존재하지만, 어플리케이션의 배포는 다수 존재할 수 있다.  *배포(deploy)*란 어플리케이션의 인스턴스에 해당한다.  일반적으로 하나의 어플리케이션은 하나의 프로덕션 사이트와, 다수의 스테이징 사이트로 배포된다.  한편 어플리케이션 개발에 참여하는 프로그래머들은 각자의 로컬 개발 환경에서 실행되는 어플리케이션 복사본을 가지고 있는데, 이 또한 하나의 배포라고 볼 수 있다.
 
-The codebase is the same across all deploys, although different versions may be active in each deploy.  For example, a developer has some commits not yet deployed to staging; staging has some commits not yet deployed to production.  But they all share the same codebase, thus making them identifiable as different deploys of the same app.
+다수의 배포들은 서로 다른 버전일 수도 있지만, 모든 배포는 하나의 코드베이스를 가진다.  예를 들어 프로그래머의 로컬 환경에는 스테이징 환경에 아직 배포되지 않은 커밋이 포함되어있을 수 있다. 마찬가지로 스테이징에는 아직 프로덕션 환경에 배포되지 않는 커밋이 포함되어있을 수도 있다.  하지만 로컬과 스테이징, 프로덕션은 모두 같은 코드베이스를 공유하고 있으며, 따라서 이들은 같은 어플리케이션의 다른 배포라고 할 수 있다.
 

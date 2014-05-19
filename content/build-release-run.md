@@ -1,19 +1,19 @@
-## V. Build, release, run
-### Strictly separate build and run stages
+## 5. 빌드(Build), 릴리스(Release), 런(Run)
+### 빌드와 실행 단계 엄밀하게 분리하기
 
-A [codebase](/codebase) is transformed into a (non-development) deploy through three stages:
+[코드베이스](/codebase)는 3단계에 걸쳐서 (개발환경이 아닌) 배포로 변환된다.
 
-* The *build stage* is a transform which converts a code repo into an executable bundle known as a *build*.  Using a version of the code at a commit specified by the deployment process, the build stage fetches and vendors [dependencies](/dependencies) and compiles binaries and assets.
-* The *release stage* takes the build produced by the build stage and combines it with the deploy's current [config](/config).  The resulting *release* contains both the build and the config and is ready for immediate execution in the execution environment.
-* The *run stage* (also known as "runtime") runs the app in the execution environment, by launching some set of the app's [processes](/processes) against a selected release.
+* *빌드 단계*에서는 코드 저장소를 *빌드*라고 불리는 실행가능한 번들로 변환한다.  배포 과정에서 지정된 특정 커밋 시점의 코드를 사용해 [의존성](/dependencies)을 설치하고 바이너리와 에셋 파일을 컴파일한다.
+* *릴리스 단계*에서는 빌드 단계에서 생성된 빌드를 넘겨받아 현재 배포의 [설정](/config)과 결합한다.  하나의 *릴리스*는 빌드와 설정을 가지고 있으며 실행 환경에서 바로 실행될 수 있다.
+* 런타임(runtime)이라고도 불리는 *실행 단계*에서는 특정한 릴리스에서 필요한 프로세스들을 실행해, 어플리케이션을 실행한다.
 
-![Code becomes a build, which is combined with config to create a release.](/images/release.png)
+![코드는 빌드가 되고, 빌드는 설정과 결합되어 하나의 릴리스가 된다.](/images/release.png)
 
-**The twelve-factor app uses strict separation between the build, release, and run stages.**  For example, it is impossible to make changes to the code at runtime, since there is no way to propagate those changes back to the build stage.
+**Twelve-Fator App은 빌드, 릴리스, 실행 단계를 엄밀하게 구분한다. 예를 들어 런타임에서 변경한 코드를 빌드 스테이지에 역전파할 수 있는 방법은 존재하지 않으며, 따라서 이러한 코드 수정은 애시당초에 불가능하다.
 
-Deployment tools typically offer release management tools, most notably the ability to roll back to a previous release.  For example, the [Capistrano](https://github.com/capistrano/capistrano/wiki) deployment tool stores releases in a subdirectory named `releases`, where the current release is a symlink to the current release directory.  Its `rollback` command makes it easy to quickly roll back to a previous release.
+배포 툴은 일반적으로 릴리스 관리 툴을 제공한다. 이러한 릴리스 관리 툴은 이전 릴리스로 되돌리는 롤백(roll back) 기능도 가지고 있다.  예를 들어 [Capistrano](https://github.com/capistrano/capistrano/wiki)는 다수의 릴리스를 `releases`라는 서브 디렉토리 안에 저장한다. 이 디렉토리 아래에서 현재 릴리스는 현재 릴리스 디렉토리를 가리키는 심볼릭 링크이다.  `rollback` 명령어를 사용하면 쉽고 빠르게 이전 릴리스로 되돌릴 수 있다.
 
-Every release should always have a unique release ID, such as a timestamp of the release (such as `2011-04-06-20:32:17`) or an incrementing number (such as `v100`).  Releases are an append-only ledger and a release cannot be mutated once it is created.  Any change must create a new release.
+모든 릴리스는 자기 고유의 릴리스 ID를 가져야한다. 대개 릴리스 ID로는 릴리스 시점의 타임스탬프(예를 들어 `2011-04-06-20:32:17`)나 자동으로 증가하는 번호(예를 들어 `v100`)를 사용한다.  릴리스는 오직 입력만 가능하며 한번 만들어지면 변경할 수 없다.  모든 변화는 새로운 릴리스를 통해서 적용된다.
 
-Builds are initiated by the app's developers whenever new code is deployed.  Runtime execution, by contrast, can happen automatically in cases such as a server reboot, or a crashed process being restarted by the process manager.  Therefore, the run stage should be kept to as few moving parts as possible, since problems that prevent an app from running can cause it to break in the middle of the night when no developers are on hand.  The build stage can be more complex, since errors are always in the foreground for a developer who is driving the deploy.
+빌드 스테이지는 새로운 코드가 배포되는 시점에 프로그래머에 의해 실행된다.  반면에 실행 단계는 서버가 재부팅되거나 프로세스 매니저에 의해 종료된 프로세스가 재실행될 때도 자동적으로 실행될 수 있다.  프로그래머가 대기하고 있지 않은 한밤중에라도 문제는 발생할 수 있기 때문에 실행 단계에서 변경 가능한 부분은 가능한 최소화되어야 한다.  반대로 빌드 단계에 발생하는 에러는 프로그래머가 확인할 수 있으므로 빌드 과정은 복잡해도 무방하다.
 

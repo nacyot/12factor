@@ -1,23 +1,23 @@
-## III. Config
-### Store config in the environment
+## 3. 설정(Config)
+### 환경 변수에 설정 저장하기
 
-An app's *config* is everything that is likely to vary between [deploys](/codebase) (staging, production, developer environments, etc).  This includes:
+어플리케이션의 *설정*은 개발, 스테이징, 프로덕션등 다양한 [배포](/codebase) 환경에 대해서 유일한 차이에 해당한다.  설정에는 아래와 같은 것들을 포함된다.
 
-* Resource handles to the database, Memcached, and other [backing services](/backing-services)
-* Credentials to external services such as Amazon S3 or Twitter
-* Per-deploy values such as the canonical hostname for the deploy
+* 데이터베이스, Memcached를 비롯한 [백엔드 서비스](/backing-services)에 대한 리소스 핸들
+* Amazon S3와 Twitter 같은 외부 서비스에 대한 인증 정보
+* 각 배포환경에 대한 설정값(예를 들어 CNAME 등)
 
-Apps sometimes store config as constants in the code.  This is a violation of twelve-factor, which requires **strict separation of config from code**.  Config varies substantially across deploys, code does not.
+때때로 프로그래머들은 어플리케이션 내부에 설정 정보를 저장하기도 한다. 이는 Twelve-Factor에 위배되는 것으로, 설정 정보는 엄격히 코드와 분리되어야한다.  설정은 배포 환경에 따라서 달라지지만 코드는 달라지지 않는다.
 
-A litmus test for whether an app has all config correctly factored out of the code is whether the codebase could be made open source at any moment, without compromising any credentials.
+어플리케이션에서 설정이 분리되어있는 지 여부를 확인할 수 있는 간단한 방법은, 어플리케이션 내부에 어떠한 인증 정보도 포함시키지 않고 지금 당장 오픈소스로 공개할 수 있는 지 검토해보는 것이다.
 
-Note that this definition of "config" does **not** include internal application config, such as `config/routes.rb` in Rails, or how [code modules are connected](http://static.springsource.org/spring/docs/2.5.x/reference/beans.html) in [Spring](http://www.springsource.org/).  This type of config does not vary between deploys, and so is best done in the code.
+여기서 "설정"이라는 단어의 정의는 어플리케이션 자체에 영향을 주는 설정은 포함하지 **않는다는 점**에 주의할 필요가 있다. 예를 들어 레일스의 `config/routes.rb`나 스프링의 [코드 모듈들이 어떻게 연결되어있는 지](http://static.springsource.org/spring/docs/2.5.x/reference/beans.html)는 어플리케이션 내부 설정이다.  이러한 설정들은 배포 환경 사이에 별 차이가 없으므로 코드에 저장하는 게 좋다.
 
-Another approach to config is the use of config files which are not checked into revision control, such as `config/database.yml` in Rails.  This is a huge improvement over using constants which are checked into the code repo, but still has weaknesses: it's easy to mistakenly check in a config file to the repo; there is a tendency for config files to be scattered about in different places and different formats, making it hard to see and manage all the config in one place.  Further, these formats tend to be language- or framework-specific.
+설정을 코드와 분리하기 위해 설정 정보를 담은 파일을 버전 관리에 포함시키지 않는 방법도 있다. 예를 들어 레일스 프로젝트에서는 `config/database.yml` 파일을 저장소에 포함시키지 않는다.  이 방법은 설정 정보를 버전 관리 시스템에 포함된 파일 내의 상수로 저장하는 것보다는 장족의 발전이지만 여전히 몇 가지 문제를 가지고 있다. 먼저 설정 파일을 버전 관리에 포함시키는 실수를 하기 쉽고, 설정 파일이 서로 다른 장소에 서로 다른 포맷으로 저장될 가능성이 있어, 설정을 같은 위치에서 일괄적으로 관리하기가 어려워진다.  또한 이러한 형식은 여전히 특정 프로그래밍 언어나 특정 프레임워크에 의존적일 수밖에 없다.
 
-**The twelve-factor app stores config in *environment variables*** (often shortened to *env vars* or *env*).  Env vars are easy to change between deploys without changing any code; unlike config files, there is little chance of them being checked into the code repo accidentally; and unlike custom config files, or other config mechanisms such as Java System Properties, they are a language- and OS-agnostic standard.
+**Twelve-Factor App에서는 설정을 *환경 변수(environment variables)*에 저장한다**. 환경변수를 사용하면 코드 수정 없이 설정을 쉽게 변경할 수 있다. 설정 파일과는 달리 실수로 저장소에 설정을 포함시킬 가능성도 낮다. 나아가 독자적인 형식의 설정 파일이나 자바 시스템 프로퍼티와 같은 설정 형식과 달리 환경변수는 언어나 OS에 의존하지 않는 표준이다.
 
-Another aspect of config management is grouping.  Sometimes apps batch config into named groups (often called "environments") named after specific deploys, such as the `development`, `test`, and `production` environments in Rails.  This method does not scale cleanly: as more deploys of the app are created, new environment names are necessary, such as `staging` or `qa`.  As the project grows further, developers may add their own special environments like `joes-staging`, resulting in a combinatorial explosion of config which makes managing deploys of the app very brittle.
+설정 관리에서 또 하나 염두해야하는 것은 설정을 모아 그룹화하는 부분이다.  어플리케이션 설정은 이름으로(환경(environment)이라고도 한다)으로 구분되기도 한다. 예를 들어 일반적으로 레일스 어플리케이션에서는 `development`와 `test`, `production` 환경을 사용한다.  하지만 이는 환경을 확장하는데 적합하지 않다. 이를 테면 어플리케이션 배포가 늘어감에 따라 `staging`이나 `qa`와 새로운 이름이 필요해진다.  프로젝트가 커져감에 따라 프로그래머는 `joes-staging`과 같은 자신만의 환경을 추가하기도 한다. 결과적으로 서로 다른 설정을 가진 환경은 폭발적으로 늘어나며 배포를 관리하는 일은 매우 어려워진다.
 
-In a twelve-factor app, env vars are granular controls, each fully orthogonal to other env vars.  They are never grouped together as "environments," but instead are independently managed for each deploy.  This is a model that scales up smoothly as the app naturally expands into more deploys over its lifetime.
+Twelve-Factor App의 환경변수들은 세밀하게 관리되며 각각의 환경변수는 서로에 대해 직교한다.  환경변수가 "환경"으로 그룹화되어지지는 않지만 대신에 각 배포에 대해서 독립적으로 관리된다.  환경변수를 통해 설정을 관리하는 방식은 어플리케이션이 더 많은 배포로 확장되어가는 데 있어서 자연스럽게 확장 가능하도록 유도하는 모델이다.
 

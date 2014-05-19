@@ -1,38 +1,38 @@
 The Twelve Factors
 ==================
 
-## [I. Codebase](/codebase)
-### One codebase tracked in revision control, many deploys
+## [1. 코드베이스(Codebase)](/codebase)
+### 버전 관리되는 하나의 코드베이스와 다수의 배포
 
-## [II. Dependencies](/dependencies)
-### Explicitly declare and isolate dependencies
+## [2. 의존성(Dependencies)](/dependencies)
+### 명시적인 의존성 선언과 분리
 
-## [III. Config](/config)
-### Store config in the environment
+## [3. 설정(Config)](/config)
+### 환경변수에 설정 저장하기
 
-## [IV. Backing Services](/backing-services)
-### Treat backing services as attached resources
+## [4. 백엔드 서비스(Backing Services)](/backing-services)
+### 백엔드 서비스를 어플리케이션에 붙여진 리소스(attched resources)로 다루기
 
-## [V. Build, release, run](/build-release-run)
-### Strictly separate build and run stages
+## [5. 빌드(Build), 릴리스(Release), 실행(Run)](/build-release-run)
+### 빌드와 실행 단계 엄밀하게 분리하기
 
-## [VI. Processes](/processes)
-### Execute the app as one or more stateless processes
+## [6. 프로세스(Processes)](/processes)
+### 어플리케이션을 하나나 다수의 상태 없는 프로세스로 실행하기
 
-## [VII. Port binding](/port-binding)
-### Export services via port binding
+## [7. 포트 바인딩(Port binding)](/port-binding)
+### 포트 바인딩으로 서비스 공개하기
 
-## [VIII. Concurrency](/concurrency)
-### Scale out via the process model
+## [8. 병행성(Concurrency)](/concurrency)
+### 스케일 아웃을 위한 프로세스 모델
 
-## [IX. Disposability](/disposability)
-### Maximize robustness with fast startup and graceful shutdown
+## [9. 일회용성(Disposability)](/disposability)
+### 빠른 실행과 정상적 종료를 통해 견고성 최대화하기
 
-## [X. Dev/prod parity](/dev-prod-parity)
-### Keep development, staging, and production as similar as possible
+## [10. 개발 / 프로덕션 일치(Dev/Prod parity)](/dev-prod-parity)
+### 개발, 스테이징, 프로덕션 환경을 최대한 일치시키기
 
-## [XI. Logs](/logs)
-### Treat logs as event streams
+## [11. 로그(Logs)](/logs)
+### 로그를 이벤트 스트림으로 다루기
 
-## [XII. Admin processes](/admin-processes)
-### Run admin/management tasks as one-off processes
+## [12. 관리 프로세스(Admin processes)](/admin-processes)
+### 관리 작업을 일회용 프로세스로 실행하기

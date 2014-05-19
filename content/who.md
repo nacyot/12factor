@@ -1,4 +1,5 @@
-Who should read this document?
+어떤 사람이 이 문서를 읽어야 하나요?
 ==============================
 
-Any developer building applications which run as a service.  Ops engineers who deploy or manage such applications.
+
+서비스로서 작동하는 어플리케이션을 개발하는 모든 프로그래머.  이러한 어플리케이션을 배포하고 관리하는 Ops 엔지니어(서버 관리자)

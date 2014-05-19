@@ -1,15 +1,15 @@
-## VI. Processes
-### Execute the app as one or more stateless processes
+## 6. 프로세스(Processes)
+### 어플리케이션을 하나나 다수의 상태 없는 프로세스로 실행하기
 
-The app is executed in the execution environment as one or more *processes*.
+어플리케이션은 실행 환경 안에서 하나나 다수의 *프로세스들*로 실행된다.
 
-In the simplest case, the code is a stand-alone script, the execution environment is a developer's local laptop with an installed language runtime, and the process is launched via the command line (for example, `python my_script.py`).  On the other end of the spectrum, a production deploy of a sophisticated app may use many [process types, instantiated into zero or more running processes](/concurrency).
+가장 간단한 예를 들면 코드가 하나의 스크립트이고 실행 환경이 개발자의 로컬 노트북일 때, 프로세스는 명령행에서 `python my_script.py`와 같은 명령어로 실행된다.  좀 더 복잡한 예로는, 일회성 프로세스나 여러개의 프로세스들로 실행되는 다양한 타입의 프로세스를 사용하는 어플리케이션의 프로덕션 배포를 생각할 수 있다.
 
-**Twelve-factor processes are stateless and [share-nothing](http://en.wikipedia.org/wiki/Shared_nothing_architecture).**  Any data that needs to persist must be stored in a stateful [backing service](/backing-services), typically a database.
+**Twelve-Factor의 프로세스들은 상태가 없고 [아무것도 공유하지 않는다(share-nothing).](http://en.wikipedia.org/wiki/Shared_nothing_architecture)** 장시간에 걸쳐 보존되어야하는 모든 데이터는 데이터베이스와 같이 상태를 가지는 [백엔드 서비스](/backing-services)에 저장되어야한다.
 
-The memory space or filesystem of the process can be used as a brief, single-transaction cache.  For example, downloading a large file, operating on it, and storing the results of the operation in the database.  The twelve-factor app never assumes that anything cached in memory or on disk will be available on a future request or job -- with many processes of each type running, chances are high that a future request will be served by a different process.  Even when running only one process, a restart (triggered by code deploy, config change, or the execution environment relocating the process to a different physical location) will usually wipe out all local (e.g., memory and filesystem) state.
+필요하다면 짧은 단일 트랜젝션을 과정의 캐시로 프로세스의 메모리 공간이나 파일 시스템을 사용해도 무방하다.  용량이 큰 파일을 다운로드해서 이 파일을 처리하고 그 결과를 데이터베이스에 저장하는 과정의 경우, 파일 시스템을 캐시로 이용해도 괜찮다.  하지만 Twelve-Factor App에서는 메모리나 디스크에 캐시된 정보가 이후의 요청이나 작업을 처리할 때 재사용된다고는 결코 가정하지 않는다. 각 프로세스 타입의 프로세스가 다수 실행되는 동안에 미래에 일어나는 요청이나 작업이 같은 프로세스에서 실행된다는 보장은 어디에도 없다.  하나의 프로세스만 사용하더라도 프로세스가 재실행되면 모든 국소적인 상태(메모리나 파일 시스템 등)은 사라져 버릴 수 있다. 코드 배포, 설정 변경, 프로세스가 돌아가는 물리 머신 이동 등 프로세스 재실행은 빈번히 일어날 수 있는 일이다.
 
-Asset packagers (such as [Jammit](http://documentcloud.github.com/jammit/) or [django-assetpackager](http://code.google.com/p/django-assetpackager/)) use the filesystem as a cache for compiled assets.  A twelve-factor app prefers to do this compiling during the [build stage](/build-release-run), such as the [Rails asset pipeline](http://ryanbigg.com/guides/asset_pipeline.html), rather than at runtime.
+[Jammit](http://documentcloud.github.com/jammit/)이나 [django-assetpackager](http://code.google.com/p/django-assetpackager/) 같은 에셋 패키저는 컴파일된 에셋을 캐시하기 위해서 파일 시스템을 사용한다.  Twelve-Factor App에선 프로세스에서 컴파일을 하기보다는 [레일스 에셋 파이프라인](http://ryanbigg.com/guides/asset_pipeline.html)처림 [빌드 단계](/build-release-run)에서 수행한다.
 
-Some web systems rely on ["sticky sessions"](http://en.wikipedia.org/wiki/Load_balancing_%28computing%29#Persistence) -- that is, caching user session data in memory of the app's process and expecting future requests from the same visitor to be routed to the same process.  Sticky sessions are a violation of twelve-factor and should never be used or relied upon.  Session state data is a good candidate for a datastore that offers time-expiration, such as [Memcached](http://memcached.org/) or [Redis](http://redis.io/).
+어플리케이션에 따라서는 [스티키 세션(sticky sessions)](http://en.wikipedia.org/wiki/Load_balancing_%28computing%29#Persistence)에 의존한 처리를 하기도 한다. 스티키 세션이란 사용자 세션 데이터를 어플리케이션 프로세스의 메모리에 캐시하고 같은 방문자의 미래 요청이 이전에 요청을 처리했던 것과 같은 프로세스에서 처리될 것으로 기대하는 방식이다.  스티키 세션은 Twelve-Factor에 위배되며 세션 관리를 할 때 결코 이러한 방식에 의존해서는 안 된다.  세션 상태 데이터는 만료 시간과 함께 [Memcached](http://memcached.org/)나 [Redis](http://redis.io/) 같은 데이터스토어에 저장되어야 한다.
 

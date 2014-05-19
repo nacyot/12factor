@@ -1,76 +1,77 @@
-## X. Dev/prod parity
-### Keep development, staging, and production as similar as possible
+## 10. 개발 / 프로덕션 일치(Dev/Prod parity)
+### 개발, 스테이징, 프로덕션 환경을 최대한 일치시키기
 
-Historically, there have been substantial gaps between development (a developer making live edits to a local [deploy](/codebase) of the app) and production (a running deploy of the app accessed by end users).  These gaps manifest in three areas:
+역사적으로 프로그래머가 직접 수정할 수 있는 로컬 배포를 의미하는 개발 환경과 사용자가 어플리케이션을 실제로 사용하는 배포인 프로덕션 환경 간에는 큰 차이가 있었다. 이러한 차이는 크게 3가지로 요약된다.
 
-* **The time gap:** A developer may work on code that takes days, weeks, or even months to go into production.
-* **The personnel gap**: Developers write code, ops engineers deploy it.
-* **The tools gap**: Developers may be using a stack like Nginx, SQLite, and OS X, while the production deploy uses Apache, MySQL, and Linux.
+* **시간 갭**: 프로그래머가 작업 중인 코드가 프로덕션 환경에 반영되기까지는 짧아도 몇 일이 소요되며 길게는 몇 달이 걸리기도 한다.
+* **사람 갭:** 프로그래머가 작성한 코드를 ops 엔지니어가 배포한다.
+* **도구 갭:** 개발은 주로 Nginx, SQLite, OS X르 통해 이루어지지만  프로덕션 배포에서는 주로 Apache, MySQL, Linux를 사용한다.
 
-**The twelve-factor app is designed for [continuous deployment](http://www.avc.com/a_vc/2011/02/continuous-deployment.html) by keeping the gap between development and production small.**  Looking at the three gaps described above:
+**Twelve-Factor App은 [계속적 배포(continuous deployment)](http://www.avc.com/a_vc/2011/02/continuous-deployment.html)를 실현가능하도록 개발 환경과 프로덕션 간의 차이를 최소화 하도록 설계되었다. 위에서 살펴본 3가지 차이에 대해서 살펴보면 아래와 같다.
 
-* Make the time gap small: a developer may write code and have it deployed hours or even just minutes later.
-* Make the personnel gap small: developers who wrote code are closely involved in deploying it and watching its behavior in production.
-* Make the tools gap small: keep development and production as similar as possible.
+* 시간 갭 줄이기: 프로그래머가 작성한 코드는 몇 시간만에 배포된다. 빠르면 몇 분만에도 배포된다.
+* 사람 갭 줄이기: 코드를 작성한 개발자는 배포에 밀접하게 참여하고, 프로덕션 환경에 배포된 어플리케이션의 작동 상태를 지속적으로 확인한다.
+* 도구 갭 줄이기: 최대한 개발 환경과 프로덕션 환경의 시스템과 도구를 비슷하게 구성한다.
 
-Summarizing the above into a table:
+
+표로 요약하면 다음과 같다.
 
 <table>
   <tr>
     <th></th>
-    <th>Traditional app</th>
-    <th>Twelve-factor app</th>
+    <th>기존의 어플리케이션</th>
+    <th>Twelve-Factor App</th>
   </tr>
   <tr>
-    <th>Time between deploys</th>
-    <td>Weeks</td>
-    <td>Hours</td>
+    <th>배포 간격</th>
+    <td>수 주</td>
+    <td>몇 시간</td>
   </tr>
   <tr>
-    <th>Code authors vs code deployers</th>
-    <td>Different people</td>
-    <td>Same people</td>
+    <th>코드 작성자 vs 코드 배포자</th>
+    <td>다른 사람</td>
+    <td>같은 사람</td>
   </tr>
   <tr>
-    <th>Dev vs production environments</th>
-    <td>Divergent</td>
-    <td>As similar as possible</td>
+    <th>개발 환경 vs 프로덕션 환경</th>
+    <td>다름</td>
+    <td>최대한 비슷하게 구성</td>
   </tr>
 </table>
 
-[Backing services](/backing-services), such as the app's database, queueing system, or cache, is one area where dev/prod parity is important.  Many languages offer libraries which simplify access to the backing service, including *adapters* to different types of services.  Some examples are in the table below.
+데이터베이스, 큐, 캐시와 같은 [백엔드 서비스](/backing-services)를 똑같이 사용하는 것도 개발 / 배포 환경 일치에서 매우 중요하다.  많은 프로그래밍 언어에는 특정 백엔드 서비스를 간단히 사용할 수 있게 해주는 라이브러리가 존재한다. 이런 라이브러리는 대개 비슷한 종류의 백엔드 서비스들을 지원하는 어댑터를 포함한다.  아래 표는 그 예를 보여준다.
 
 <table>
   <tr>
-    <th>Type</th>
-    <th>Language</th>
-    <th>Library</th>
-    <th>Adapters</th>
+    <th>분류</th>
+    <th>언어</th>
+    <th>라이브러리</th>
+    <th>어댑터</th>
   </tr>
   <tr>
-    <td>Database</td>
-    <td>Ruby/Rails</td>
-    <td>ActiveRecord</td>
+    <td>데이터베이스</td>
+    <td>루비 / 레일스</td>
+    <td>Active Record</td>
     <td>MySQL, PostgreSQL, SQLite</td>
   </tr>
   <tr>
-    <td>Queue</td>
-    <td>Python/Django</td>
+    <td>큐</td>
+    <td>파이썬 / Django</td>
     <td>Celery</td>
     <td>RabbitMQ, Beanstalkd, Redis</td>
   </tr>
   <tr>
-    <td>Cache</td>
-    <td>Ruby/Rails</td>
+    <td>캐시</td>
+    <td>루비 / 레일스</td>
     <td>ActiveSupport::Cache</td>
-    <td>Memory, filesystem, Memcached</td>
+    <td>메모리, 파일, Memcached</td>
   </tr>
 </table>
 
-Developers sometimes find great appeal in using a lightweight backing service in their local environments, while a more serious and robust backing service will be used in production.  For example, using SQLite locally and PostgreSQL in production; or local process memory for caching in development and Memcached in production.
+보통 프로덕션 환경에서는 더 신뢰성이 높은 백엔드 서비스를 사용한다. 반면에 자신의 로컬 개발 환경에서 프로그래머들은 좀 더 가벼운 백엔드 서비스를 사용한다.  예를 들어 프로덕션 환경에서는 PostgreSQL이 많이 사용되지만, 개발용도로는 SQLite가 많이 사용된다. 개발 용도로는 메모리 캐시를 사용하다가 프로덕션에서는 Memcached를 사용하기도 한다.
 
-**The twelve-factor developer resists the urge to use different backing services between development and production**, even when adapters theoretically abstract away any differences in backing services.  Differences between backing services mean that tiny incompatibilities crop up, causing code that worked and passed tests in development or staging to fail in production.  These types of errors create friction that disincentivizes continuous deployment.  The cost of this friction and the subsequent dampening of continuous deployment is extremely high when considered in aggregate over the lifetime of an application.
+비록 어댑터가 이론적으로 서로 다른 백엔드 서비스들을 완벽히 추상화해낸다고 할 지라도, **Twelve-Factor App 개발자는 개발 환경과 프로덕션 환경에서 최대한 같은 백엔드 서비스를 사용해야한다.** 백엔드 서비스가 다르다는 말은 아주 작지만 비호환성이 존재한다는 말이고, 따라서 개발 환경과 스테이징에서 테스트까지 통과하는 코드가 프로덕션 환경에서는 제대로 작동하지 않을 수도 있다.  이런 종류의 에러는 계속적 배포를 방해하는 요소가 된다.  이러한 문제로 인해 계속적 배포를 할 수 없게 되는 것은 어플리케이션 라이프 사이클 전체의 관점에서 볼 때 매우 큰 비용이다.
 
-Lightweight local services are less compelling than they once were.  Modern backing services such as Memcached, PostgreSQL, and RabbitMQ are not difficult to install and run thanks to modern packaging systems, such as [Homebrew](http://mxcl.github.com/homebrew/) and [apt-get](https://help.ubuntu.com/community/AptGet/Howto).  Alternatively, declarative provisioning tools such as [Chef](http://www.opscode.com/chef/) and [Puppet](http://docs.puppetlabs.com/) combined with light-weight virtual environments such as [Vagrant](http://vagrantup.com/) allow developers to run local environments which closely approximate production environments. The cost of installing and using these systems is low compared to the benefit of dev/prod parity and continuous deployment.
+과거에 로컬에서 주로 사용하던 경량 서비스들은 더이상 이전만큼 매력적이지 않다. Memcached, PostgreSQL, RabbitMQ와 같은 모던한 백엔드 서비스는 [Homebrew](http://mxcl.github.com/homebrew/)나 [apt-get](https://help.ubuntu.com/community/AptGet/Howto) 같은 모던한 패키지 관리툴을 사용하면 어렵지 않게 설치할 수 있다.  시스템 패키지 툴 이외에도 [Chef](http://www.opscode.com/chef/)나 [Puppet](http://docs.puppetlabs.com/) 같은 선언적 프로비저닝 툴과 [Vagrant](http://vagrantup.com/)를 사용하면 프로그래머의 개발 환경을 프로덕션 환경에 거의 동일화시킬 수 있다. 개발 환경 / 프로덕션 환경 일치와 계속적 배포의 장점을 생각해본다면 이런 시스템을 구축하는 일은 적은 비용에 불과하다.
 
-Adapters to different backing services are still useful, because they make porting to new backing services relatively painless.  But all deploys of the app (developer environments, staging, production) should be using the same type and version of each of the backing services.
+다른 백엔드 서비스를 사용할 수 있게 해주는 어댑터들은 여전히 유용하다. 이러한 어댑터를 새용하면 적은 노력으로 새로운 백엔드 서비스를 도입할 수 있다.  그렇다고 하더라도 개발 환경, 스테이징, 프로덕션은 모두 같은 타입과 같은 버전의 백엔드 서비스를 사용해야한다.

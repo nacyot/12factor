@@ -1,9 +1,9 @@
-Background
+배경
 ==========
 
-The contributors to this document have been directly involved in the development and deployment of hundreds of apps, and indirectly witnessed the development, operation, and scaling of hundreds of thousands of apps via our work on the [Heroku](http://www.heroku.com/) platform.
+이 문서의 저자는 수백개 어플리케이션의 개발과 배포에 직접적으로 관여했으며, [히로쿠(Heroku)](http://www.heroku.com/) 플랫폼에서 일하면서 수천개 어플리케이션의 개발(development), 운용(operation), 확장(scaling)에 간접적으로 참여했다.
 
-This document synthesizes all of our experience and observations on a wide variety of software-as-a-service apps in the wild.  It is a triangulation on ideal practices app development, paying particular attention to the dynamics of the organic growth of an app over time, the dynamics of collaboration between developers working on the app's codebase, and [avoiding the cost of software erosion](http://blog.heroku.com/archives/2011/6/28/the_new_heroku_4_erosion_resistance_explicit_contracts/).
+이 문서는 실무에서 다양하게 사용되는 "서비스로서의 소프트웨어" 어플리케이션들에 대한 우리의 모든 경험과 관찰을 집약한 책입니다.  이는 어플리케이션 개발의 이상적인 프렉티스에 대한 삼각측량과 같다. 여기서는 특히 시간에 따른 어플리케이션의 유기적 성장에 대한 역학, 어플리케이션의 코드베이스를 둘러썬 프로그래머 간 협업의 역학, 그리고 [소프트웨어 부패에 대한 비용 회피]에 주목하고 있다.
 
-Our motivation is to raise awareness of some systemic problems we've seen in modern application development, to provide a shared vocabulary for discussing those problems, and to offer a set of broad conceptual solutions to those problems with accompanying terminology.  The format is inspired by Martin Fowler's books *[Patterns of Enterprise Application Architecture](http://books.google.com/books/about/Patterns_of_enterprise_application_archi.html?id=FyWZt5DdvFkC)* and *[Refactoring](http://books.google.com/books/about/Refactoring.html?id=1MsETFPD3I0C)*.
+이 책을 집필한 동기는, 우리가 모던한 어플리케이션 개발에서 부딪혀온 특정한 종류의 시스템 문제에 대한 관심을 높이고자함이다. 나아가 이러한 문제를 논의 하기 위한 어휘를 제공하고, 이 문제에 대한 넓고 개념적인 해결책을 전문용어와 함께 제공하는 것이다.  이 책의 형식은 Martin Fowler의 서적 *[Patterns of Enterprise Application Architecture](http://books.google.com/books/about/Patterns_of_enterprise_application_archi.html?id=FyWZt5DdvFkC)*와 *[Refactoring](http://books.google.com/books/about/Refactoring.html?id=1MsETFPD3I0C)*의 영향을 받았다.
 

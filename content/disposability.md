@@ -1,14 +1,14 @@
-## IX. Disposability
-### Maximize robustness with fast startup and graceful shutdown
+## 9. 일회용성(Disposability)
+### 빠른 실행과 정상적 종료를 통해 견고성 최대화하기
 
-**The twelve-factor app's [processes](/processes) are *disposable*, meaning they can be started or stopped at a moment's notice.**  This facilitates fast elastic scaling, rapid deployment of [code](/codebase) or [config](/config) changes, and robustness of production deploys.
+**Twelve-Factor App의 [프로세스들](/processes)은 *버려질 수* 있다. 바꿔 말해 바로 실행하거나 종료할 수 있다.** 이러한 특징을 통해 빠르고 유연한 확장이 가능하며 [코드](/codebase)와 [설정](/config)  변경에 따른 빠른 배포와 신뢰성 높은 프로덕션 배포가 가능하다. 
 
-Processes should strive to **minimize startup time**.  Ideally, a process takes a few seconds from the time the launch command is executed until the process is up and ready to receive requests or jobs.  Short startup time provides more agility for the [release](/build-release-run) process and scaling up; and it aids robustness, because the process manager can more easily move processes to new physical machines when warranted.
+프로그래머는 항상 프로세스 **기동 시간을 최소화**하기 위해 노력해야한다.  이상적인 기준을 제시한다면, 하나의 프로세스는 기동되고 몇 초 안에 요청이나 작업을 처리할 준비가 되어야한다.  시작 시간이 짧아질 수록 [릴리스](/build-release-run)와 스케일 업이 더 애자일해진다. 나아가 프로세스 매니저가 필요에 따라 프로세스를 다른 물리 머신으로 간단히 이동시킬 수 있게 되어 신뢰성은 더욱 높아진다.
 
-Processes **shut down gracefully when they receive a [SIGTERM](http://en.wikipedia.org/wiki/SIGTERM)** signal from the process manager.  For a web process, graceful shutdown is achieved by ceasing to listen on the service port (thereby refusing any new requests), allowing any current requests to finish, and then exiting.  Implicit in this model is that HTTP requests are short (no more than a few seconds), or in the case of long polling, the client should seamlessly attempt to reconnect when the connection is lost.
+프로세스는 프로세스 매니저로부터 **[SIGTERM](http://en.wikipedia.org/wiki/SIGTERM) signal을 받으면 정상적으로 종료된다**.  웹 프로세스라면 서비스 포트에서 요청을 기다리는 일을 중단하고(따라서 새로운 요청을 받지 않고) 처리중인 요청을 마무리하고 종료된다.  이는 HTTP 요청이 짧다는 것(길어야 몇 초)을 암묵적으로 전제한다. 롱 풀링(long polling)을 사용하고 있다면 클라이언트는 연결이 끊어지면 자연스럽게 접속을 재시도한다.
 
-For a worker process, graceful shutdown is achieved by returning the current job to the work queue.  For example, on [RabbitMQ](http://www.rabbitmq.com/) the worker can send a [`NACK`](http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.nack); on [Beanstalkd](http://kr.github.com/beanstalkd/), the job is returned to the queue automatically whenever a worker disconnects.  Lock-based systems such as [Delayed Job](https://github.com/collectiveidea/delayed_job#readme) need to be sure to release their lock on the job record.  Implicit in this model is that all jobs are [reentrant](http://en.wikipedia.org/wiki/Reentrant_%28subroutine%29), which typically is achieved by wrapping the results in a transaction, or making the operation [idempotent](http://en.wikipedia.org/wiki/Idempotence).
+워커 프로세스가 정상적으로 종료된다는 의미는 처리중인 작업을 작업 큐에 되돌린다는 것이다.  예를 들어 [RabbitMQ](http://www.rabbitmq.com/) 워커는 [`NACK`](http://www.rabbitmq.com/amqp-0-9-1-quickref.html#basic.nack)을 보낼 수 있다. [Beanstalkd](http://kr.github.com/beanstalkd/)에서는 워커 접속이 종료되면 작업이 자동적으로 큐로 되돌아간다.  [Delayed Job](https://github.com/collectiveidea/delayed_job#readme)처럼 잠금(Lock)을 기반으로로 한 시스템에서는 해당하는 작업 레코드에 대한 잠금을 풀어줘야한다.  이 모델에서는 암묵적으로 어떤 작업이라도 다시 큐로 되돌아 올 수 있다고 가정한다. 큐로 작업을 되돌리는 방법으로는 작업을 트랜젝션으로 감싸거나 작업을 멱등으로 만드는 방법있다.
 
-Processes should also be **robust against sudden death**, in the case of a failure in the underlying hardware.  While this is a much less common occurrence than a graceful shutdown with `SIGTERM`, it can still happen.  A recommended approach is use of a robust queueing backend, such as Beanstalkd, that returns jobs to the queue when clients disconnect or time out.  Either way, a twelve-factor app is architected to handle unexpected, non-graceful terminations.  [Crash-only design](http://lwn.net/Articles/191059/) takes this concept to its [logical conclusion](http://docs.couchdb.org/en/latest/intro/overview.html).
+프로세스는 하드웨어 이상에 따른 **갑작스러운 종료도 대응할 수 있어야한다.**이런 경우는 `SIGTERM` 신호에 의한 정상적인 종료에 비해서는 드물게 일어나지만 얼마든지 일어날 수 있다.  이를 해결하기 위해 추천하는 방법으로는, 먼저 Beanstalkd와 같은 견고한 큐잉 백엔드 시스템을 사용할 것, 그리고 클라이언트의 접속이 끊기거나 타임아웃이 발생하면 작업을 다시 큐로 돌려주는 방법이 있다.  어느 쪽이건 Twelve-Factor App은 예상할 수 없는 비정상적인 종료에 대응해야한다.  [Crash-only 설계](http://lwn.net/Articles/191059/)의 결론은 이 개념으로 귀결된다.
 
 

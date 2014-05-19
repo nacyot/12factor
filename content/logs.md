@@ -1,16 +1,17 @@
-## XI. Logs
-### Treat logs as event streams
+## 11. 로그(Logs)
+### 로그를 이벤트 스트림으로 다루기
 
-*Logs* provide visibility into the behavior of a running app.  In server-based environments they are commonly written to a file on disk (a "logfile"); but this is only an output format.
+*로그*는 실행중인 어플리케이션에서 어떤 일이 일어나고 있는 지 보여준다.  일반적으로 서버 기반 환경에서 로그는 디스크에 로그 파일로 쓰여진다. 하지만 이는 한 가지 출력 형식일 뿐이다.
 
-Logs are the [stream](http://adam.heroku.com/past/2011/4/1/logs_are_streams_not_files/) of aggregated, time-ordered events collected from the output streams of all running processes and backing services.  Logs in their raw form are typically a text format with one event per line (though backtraces from exceptions may span multiple lines).  Logs have no fixed beginning or end, but flow continously as long as the app is operating.
+로그는 모든 실행중인 프로세스와 백엔드 서비스의 누적되며 시간순으로 수집되고 정렬되는 이벤트 [스트림](http://adam.heroku.com/past/2011/4/1/logs_are_streams_not_files)이다.  일반적으로 어플리케이션이 직접 생성하는 로그는 한 줄에 하나의 이벤트를 텍스트 포맷으로 기록한다(예외를 추적하는 로그는 여러줄로 쓰여지기도 한다). 로그는 고정된 시작과 끝이 없으면 어플리케이션이 실행되는 한 계속된다.
 
-**A twelve-factor app never concerns itself with routing or storage of its output stream.**  It should not attempt to write to or manage logfiles.  Instead, each running process writes its event stream, unbuffered, to `stdout`.  During local development, the developer will view this stream in the foreground of their terminal to observe the app's behavior.
+**Twelve Factor App은 어플리케이션의 출력 스트림의 목적지나 어디에 저장되는 지 일체 간섭하지 않는다.** 어플리케이션은 로그를 작성하거나 로그 파일을 관리하려고 해서는 안된다.  로그 파일을 관리하는 대신 각각의 실행중인 프로세스는 자신의 이벤트 스트림을 버퍼없이 `stdout`에 출력한다.  로컬에서 개발중인 프로그래머는 이러한 스트림을 터미널의 포그라운드에서 확인할 수 있으며, 이를 통해 어플리케이션이 어떻게 동작하는 지 확인할 수 있다.
 
-In staging or production deploys, each process' stream will be captured by the execution environment, collated together with all other streams from the app, and routed to one or more final destinations for viewing and long-term archival.  These archival destinations are not visible to or configurable by the app, and instead are completely managed by the execution environment.  Open-source log routers (such as [Logplex](https://github.com/heroku/logplex) and [Fluent](https://github.com/fluent/fluentd)) are available for this purpose.  
+스테이징이나 프로덕션 배포에서 각각의 프로세스 스트림은 실행 환경에 의해 포착되며, 어플리케이션에서 발생하는 다른 모든 스트림과 함께 정렬되며, 출력이나 장기적인 저장을 위해 하나나 여러 목적지로 보내진다.  이러한 최종 목적지는 어플리케이션에서는 볼 수도 없고 설정할 수도 없으며, 오직 실행 환경에 의해서만 관리된다.  오픈소스 로그 라우터 [Logplex](https://github.com/heroku/logplex)나 [Fluent](https://github.com/fluent/fluentd)가 로그를 관리하는 목적으로 사용된다.  
 
-The event stream for an app can be routed to a file, or watched via realtime tail in a terminal.  Most significantly, the stream can be sent to a log indexing and analysis system such as [Splunk](http://www.splunk.com/), or a general-purpose data warehousing system such as [Hadoop/Hive](http://hive.apache.org/).  These systems allow for great power and flexibility for introspecting an app's behavior over time, including:
+어플리케이션의 이벤트 스트림은 파일로 보내지거나 터미널에서 tail 명령어를 통해 실시간으로 볼 수 있다.  출력 스트림은 추가적으로 로그 인덱스와 분석을 위해 [Splunk](http://www.splunk.com/)로 보내지거나 범용 데이터 웨어하우스 시스템인 [Hadoop/Hive](http://hive.apache.org/)로 보내질 수 있다.  이러한 시스템들은 장기적인 관점에서 어플리케이션의 동작을 확인하는데 매우 유연하고 강력하다. 이를 통해 아래와 같은 일들을 쉽게 할 수 있다.
 
-* Finding specific events in the past.
-* Large-scale graphing of trends (such as requests per minute).
-* Active alerting according to user-defined heuristics (such as an alert when the quantity of errors per minute exceeds a certain threshold).
+* 과거에 발생한 특정한 이벤트를 찾을 수 있다.
+* 분당 리퀘스트와 같은 수치를 장기에 걸쳐 그래프로 그릴 수 있다.
+* 사용자(관리자)가 정의한 특정 조건에 따라 경고 메시지를 보내줄 수 있다. 예를 들어 일정 시간 동안에 일정 수준 이상의 에러메시지가 발생할 때 이메일이나 다른 방법을 통해 알려줄 수 있다.
+

@@ -1,14 +1,16 @@
-## XII. Admin processes
-### Run admin/management tasks as one-off processes
+## 12. 관리 프로세스(Admin processes)
+### 관리 작업을 일회용 프로세스로 실행하기
 
-The [process formation](/concurrency) is the array of processes that are used to do the app's regular business (such as handling web requests) as it runs.  Separately, developers will often wish to do one-off administrative or maintenance tasks for the app, such as:
+[프로세스 포메이션](/concurrency)이란 어플리케이션이 실행되는 동안에 어플리케이션에서 처리되는 각각의 역할(예를 들어 웹 리퀘스트 처리, 백그라운드 작업 등)을 처리하기 위한 프로세스 집합을 일컫는다.  이러한 프로세스 이외에 프로그래머는 어플리케이션 관리나 유지보수를 위해 딱 한번만 실행되는 작업을 실행해야할 수도 있다. 아래와 같은 경우들이 일회성 작업의 예이다.
 
-* Running database migrations (e.g. `manage.py syncdb` in Django, `rake db:migrate` in Rails).
-* Running a console (also known as a [REPL](http://en.wikipedia.org/wiki/Read-eval-print_loop) shell) to run arbitrary code or inspect the app's models against the live database.  Most languages provide a REPL by running the interpreter without any arguments (e.g. `python` or `erl`) or in some cases have a separate command (e.g. `irb` for Ruby, `rails console` for Rails).
-* Running one-time scripts committed into the app's repo (e.g. `php scripts/fix_bad_records.php`).
+* Django의 `manage.py sincdb`나 레일스의 `rake db` 같은 데이터베이스 마이그레이션
+* 특정 코드를 실행하거나 데이터베이스에 대한 어플리케이션의 모델을 확인하기 위한 콘솔([REPL](http://en.wikipedia.org/wiki/Read-eval-print_loop)이라고도 한다) 
+`pyhton`이나 `erl` 명령어와 같이 대부분의 스크립트 언어에서는 별다른 인자없이 인터프리터를 실행하면 REPL이 실행된다. 이와 달리 루비에서는 `irb`나 `rails console` 같은 별도의 명령어를 실행해야한다.
+* 어플리케이션 저장소에 저장되어있는 한 번 실행될 목적으로 만들어진 스크립트들.(예를 들어 `php scripts/fix_bad_records.php`)
 
-One-off admin processes should be run in an identical environment as the regular [long-running processes](/processes) of the app.  They run against a [release](/build-release-run), using the same [code](/code) and [config](/config) as any process run against that release.  Admin code must ship with application code to avoid synchronization issues.
 
-The same [dependency isolation](/dependencies) techniques should be used on all process types.  For example, if the Ruby web process uses the command `bundle exec thin start`, then a database migration should use `bundle exec rake db:migrate`.  Likewise, a Python program using Virtualenv should use the vendored `bin/python` for running both the Tornado webserver and any `manage.py` admin processes.
+한 번만 실행되는 프로세스들은 [장시간에 걸쳐 실행되는 프로세스들](/processes)과 같은 환경에서 실행되어야한다.  이러한 프로세스는 특정 [릴리스](/build-release-run)에 대해서 실행되어야한다. 이 때 이 릴리스에 대해서 실행되는 모든 프로세스들은 같은 [코드](/code)와 [설정](/config)을 사용해야한다.  관리 목적으로 사용되는 코드(스크립트)는 동기화 문제를 피하기 위해 어플리케이션과 함께 배포되어야한다.
 
-Twelve-factor strongly favors languages which provide a REPL shell out of the box, and which make it easy to run one-off scripts.  In a local deploy, developers invoke one-off admin processes by a direct shell command inside the app's checkout directory.  In a production deploy, developers can use ssh or other remote command execution mechanism provided by that deploy's execution environment to run such a process.
+또한 일반적인 어플리케이션 프로세스와 관리용 프로세스는 같은 [의존성 분리](/dependencies) 방법을 통해 실행되어야한다.  예를 들어 루비 웹 프로세스가 `bundle exec thin start`로 실행된다면, 데이터베이스 마이그레이션도 같은 디렉토리에서 `bundle exec rake db:migrate` 명령어를 통해서 실행되어야한다.  마찬가지로 파이썬 어플리케이션에서 Virtualenv를 사용하고 있다면,  Tornado 웹서버는 가상환경에 있는 `bin/python`을 통해 실행되어야하며, 모든 `manage.py`를 사용하는 관리 명령어도 같은 `bin/python`을 사용해서 실행되어야 한다.
+
+REPL을 사용하면 일회성 스크립트를 쉽게 실행할 수 있으며, 따라서 Twelve-factor App은 REPL을 잘 지원하는 언어를 선호한다.  로컬 배포에서 개발자는 일회성 관리 프로세스를 어플리케이션을 체크아웃한 디렉토리 안에서 직접 실행한다.  프로덕션 배포 시에는 SSH나 프로덕션 배포 환경이 제공하는 다른 원격 도구를 사용해 관리 프로세스를 실행할 수 있다.
